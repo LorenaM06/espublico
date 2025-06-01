@@ -18,7 +18,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
         ApiService apiService = new ApiService();
-        PageOrder pageOrder = apiService.getOrders(String.valueOf(1), "1000");
+        PageOrder pageOrder = apiService.getOrders(String.valueOf(995), "1000");
         logger.debug("registros recuperados: {}", pageOrder.getContent().size());
         String nextUri = pageOrder.getLinks().get("next");
         logger.debug("Next uri: {}", nextUri);

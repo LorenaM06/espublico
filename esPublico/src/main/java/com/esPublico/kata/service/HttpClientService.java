@@ -10,10 +10,15 @@ import java.util.zip.GZIPInputStream;
 
 public class HttpClientService {
 
+    private static final HttpClientService INSTANCE = new HttpClientService();
+
     private static final HttpClient client = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_2) // Usa HTTP/2 si el servidor lo permite
             .connectTimeout(Duration.ofSeconds(10))
             .build();
+
+    public static HttpClientService getInstance() {
+        return INSTANCE;
+    }
 
     // Método GET genérico
     public String get(String url, Map<String, String> headers) throws IOException, InterruptedException {
