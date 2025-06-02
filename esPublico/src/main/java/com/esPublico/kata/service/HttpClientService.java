@@ -29,7 +29,6 @@ public class HttpClientService {
         headers.forEach(requestBuilder::header);
 
         HttpRequest request = requestBuilder.build();
-        System.out.println(url);
         HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
         return handleResponse(response);
