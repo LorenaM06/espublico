@@ -32,10 +32,14 @@ public class Main {
         ApiService apiService = new ApiService();
 
         /*
+        page 900, max 1000
         Con 30 -> 38522ms
         con 50 -> 26733ms CPU 33% Mem 39%
         con 100 -> 21223 CPU 41% Men 40%
         con 500 -> 19635 CPU 48% Mem 40%
+        con 700 -> 18919
+        SHOW VARIABLES LIKE 'max_connections';
+        SET GLOBAL max_connections = 701;
          */
         int maxConsumers = 700;
         int queueSize = 50;
