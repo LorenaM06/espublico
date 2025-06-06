@@ -15,6 +15,8 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, SQLException, ExecutionException {
+        Long init = System.currentTimeMillis();
+
         // Consultar a la API y cargar los datos en bbdd
         Long dataLoaderTime =  DDBBDataLoader.getInstance().loadDDBB();
 
@@ -42,6 +44,6 @@ public class Main {
         logger.debug("Tiempo carga bbdd total: {}", dataLoaderTime);
         logger.debug("Tiempo generación resumen: {}", summaryTime);
         logger.debug("Tiempo generación csv: {}", createCsvTime);
-        logger.debug("TIEMPO TOTAL: {}", dataLoaderTime + summaryTime + createCsvTime);
+        logger.debug("TIEMPO TOTAL: {}", System.currentTimeMillis() - init);
     }
 }
