@@ -1,0 +1,84 @@
+-- paralelizando resumen y csv
+22:41:49.001 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 159812
+22:41:49.001 [main] DEBUG com.esPublico.kata.Main -- Tiempo generación resumen: 8737
+22:41:49.001 [main] DEBUG com.esPublico.kata.Main -- Tiempo generación csv: 8747
+22:41:49.001 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 168563
+
+-- refactorizando
+22:09:37.345 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 160731
+22:09:37.346 [main] DEBUG com.esPublico.kata.Main -- Tiempo generación resumen: 9075
+22:09:37.346 [main] DEBUG com.esPublico.kata.Main -- Tiempo generación csv: 7351
+22:09:37.346 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 177157
+
+-- con csv
+21:12:09.863 [main] DEBUG com.esPublico.kata.Main -- Tiempo peticiones API: 95093
+21:12:09.863 [main] DEBUG com.esPublico.kata.Main -- Tiempo extra carga bbdd: 60894
+21:12:09.863 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 155987
+21:12:09.863 [main] DEBUG com.esPublico.kata.Main -- Tiempo resumen total: 8651
+21:12:17.647 [main] DEBUG com.esPublico.kata.service.DBService -- Tiempo csv: 3829
+21:12:17.647 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 172422
+
+- 200 hilos con índices (pero sin indice country)
+20:12:08.736 [main] DEBUG com.esPublico.kata.Main -- Tiempo peticiones API: 95070
+20:12:08.736 [main] DEBUG com.esPublico.kata.Main -- Tiempo extra carga bbdd: 370989
+20:12:08.736 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 466059
+20:12:08.736 [main] DEBUG com.esPublico.kata.Main -- Tiempo resumen total: 35041
+20:12:08.736 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 501100 (8 minutos 21 segs)
+
+- 200 hilos con índices
+20:01:20.007 [main] DEBUG com.esPublico.kata.Main -- Tiempo peticiones API: 94328
+20:01:20.007 [main] DEBUG com.esPublico.kata.Main -- Tiempo extra carga bbdd: 443698
+20:01:20.007 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 538026
+20:01:20.007 [main] DEBUG com.esPublico.kata.Main -- Tiempo resumen total: 63052
+20:01:20.007 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 601078 (10 minutos)
+
+- 200 hilos sin índices
+19:04:59.209 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=200, active=154, idle=46, waiting=0)
+19:04:59.211 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:05:29.215 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=200, active=158, idle=42, waiting=0)
+19:05:29.215 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:05:59.219 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=200, active=200, idle=0, waiting=0)
+19:05:59.221 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:06:29.229 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=200, active=200, idle=0, waiting=0)
+19:06:29.230 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:06:59.240 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=200, active=117, idle=83, waiting=0)
+19:06:59.240 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:07:19.257 [main] DEBUG com.esPublico.kata.Main -- Tiempo peticiones API: 104683
+19:07:19.257 [main] DEBUG com.esPublico.kata.Main -- Tiempo extra carga bbdd: 57707
+19:07:19.257 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 162390
+19:07:19.257 [main] DEBUG com.esPublico.kata.Main -- Tiempo resumen total: 8274
+19:07:19.257 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 170664 (2 minutos 50 segs)
+
+- 300 hilos sin índices
+18:59:44.533 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=300, active=163, idle=137, waiting=0)
+18:59:44.533 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:00:14.543 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=300, active=179, idle=121, waiting=0)
+19:00:14.543 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:00:44.558 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=300, active=298, idle=2, waiting=0)
+19:00:44.559 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:01:14.562 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=300, active=300, idle=0, waiting=0)
+19:01:14.562 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:01:44.568 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=300, active=113, idle=187, waiting=0)
+19:01:44.568 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+19:02:03.931 [main] DEBUG com.esPublico.kata.Main -- Tiempo peticiones API: 101437
+19:02:03.931 [main] DEBUG com.esPublico.kata.Main -- Tiempo extra carga bbdd: 59625
+19:02:03.931 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 161062
+19:02:03.931 [main] DEBUG com.esPublico.kata.Main -- Tiempo resumen total: 8953
+19:02:03.931 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 170015 ( 2 minutos 50 segs)
+
+-400 hilos sin índices
+18:54:57.641 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=400, active=171, idle=229, waiting=0)
+18:54:57.641 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+18:55:27.649 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=400, active=219, idle=181, waiting=0)
+18:55:27.649 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+18:55:57.652 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=400, active=314, idle=86, waiting=0)
+18:55:57.652 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+18:56:27.657 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=400, active=306, idle=94, waiting=0)
+18:56:27.657 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+18:56:57.660 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Pool stats (total=400, active=187, idle=213, waiting=0)
+18:56:57.661 [HikariPool-1 housekeeper] DEBUG com.zaxxer.hikari.pool.HikariPool -- HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+18:57:18.732 [main] DEBUG com.esPublico.kata.Main -- Tiempo peticiones API: 97726
+18:57:18.732 [main] DEBUG com.esPublico.kata.Main -- Tiempo extra carga bbdd: 65195
+18:57:18.732 [main] DEBUG com.esPublico.kata.Main -- Tiempo carga bbdd total: 162921
+18:57:18.732 [main] DEBUG com.esPublico.kata.Main -- Tiempo resumen total: 8797
+18:57:18.732 [main] DEBUG com.esPublico.kata.Main -- TIEMPO TOTAL: 171718 (2 minutos 57 segs)
