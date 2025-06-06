@@ -24,9 +24,9 @@ public class ConsumerWorker implements Runnable {
             while (true) {
                 List<Order> lote = queue.take(); // espera si la cola está vacía
                 if (lote.isEmpty()) break; // señal de fin
-                logger.debug("Insertando lote");
+                //logger.debug("Insertando lote");
                 dbService.insertBatch(lote);
-                logger.debug("Lote insertado");
+                //logger.debug("Lote insertado");
             }
         } catch (Exception e) {
             logger.error(e.getMessage()); // log real en producción

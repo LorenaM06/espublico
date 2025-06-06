@@ -5,15 +5,11 @@ import com.esPublico.kata.model.PageOrder;
 import com.esPublico.kata.service.ApiService;
 import com.esPublico.kata.service.ConsumerWorker;
 import com.esPublico.kata.service.DBService;
-import com.mysql.cj.jdbc.MysqlDataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -21,53 +17,42 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
 
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, SQLException {
-        Long init = System.currentTimeMillis();
-        ApiService apiService = new ApiService();
+        Long init1 = System.currentTimeMillis();
 
         /*
-        page 900, max 1000
-        Con 30 -> 38522ms
-        con 50 -> 26733ms CPU 33% Mem 39%
-        con 100 -> 21223 CPU 41% Men 40%
-        con 500 -> 19635 CPU 48% Mem 40%
-        con 700 -> 18919
-        SHOW VARIABLES LIKE 'max_connections';
-        SET GLOBAL max_connections = 701;
+                PETICIONES API Y CARGA DE DATOS
          */
-        int maxConsumers = 700;
+        ApiService apiService = new ApiService();
+        int maxConsumers = 200;
         int queueSize = 50;
-        BlockingQueue<List<Order>> queue = new ArrayBlockingQueue<>(queueSize);
-        DBService inserter = new DBService(miDataSource(maxConsumers));
+        BlockingQueue<List<Order>> queue = new LinkedBlockingQueue<>();
+        DBService dbService = new DBService(miDataSource(maxConsumers));
 
         ExecutorService consumerPool = Executors.newFixedThreadPool(maxConsumers);
         // Lanzar consumidores
         for (int i = 0; i < maxConsumers; i++) {
-            consumerPool.submit(new ConsumerWorker(queue, inserter));
+            consumerPool.submit(new ConsumerWorker(queue, dbService));
         }
 
-        PageOrder pageOrder = apiService.getOrders(String.valueOf(900), "1000");
-        logger.debug("registros recuperados: {}", pageOrder.getContent().size());
-        /*inserter.insertBatch(pageOrder.getContent());*/
+        // 900-1000
+        PageOrder pageOrder = apiService.getOrders(String.valueOf(1), "1000");
         queue.put(pageOrder.getContent());
         String nextUri = pageOrder.getLinks().get("next");
-        logger.debug("Next uri: {}", nextUri);
+        //logger.debug("Next uri: {} - array anterior: {}", nextUri, Integer.toHexString(System.identityHashCode(pageOrder.getContent())));
         boolean next = nextUri!=null;
         while(next){
             pageOrder = apiService.getOrders(nextUri);
-            logger.debug("registros recuperados: {}", pageOrder.getContent().size());
-            /*inserter.insertBatch(pageOrder.getContent());*/
             queue.put(pageOrder.getContent());
             nextUri = pageOrder.getLinks().get("next");
-            logger.debug("Next uri: {}", nextUri);
+            //logger.debug("Next uri: {} - array anterior: {}", nextUri, Integer.toHexString(System.identityHashCode(pageOrder.getContent())));
             next = nextUri!=null;
         }
+        Long finPeticionesApi = System.currentTimeMillis();
 
         for (int i = 0; i < maxConsumers; i++) {
             queue.put(Collections.emptyList()); // lotes vacíos como señal de fin
@@ -75,23 +60,26 @@ public class Main {
 
         consumerPool.shutdown();
         consumerPool.awaitTermination(1, TimeUnit.HOURS);
-        logger.debug("FIN!!!");
-        Long end = System.currentTimeMillis();
-        logger.debug("Tiempo total: {}", end-init);
+        logger.debug("Carga de bbdd terminada");
+        Long end1 = System.currentTimeMillis();
 
 
+        /*
+                RESUMEN DATOS
+         */
+        Long init2 = System.currentTimeMillis();
+        dbService.executeGroupBy();
+        Long end2 = System.currentTimeMillis();
 
 
-
-
-
-        /*OrderService orderService = new OrderService();
-        CsvExporter exporter = new CsvExporter();
-
-        List<Order> orders = apiService.fetchOrders();
-        orderService.saveAll(orders);
-        orderService.printSummary();
-        exporter.exportSortedOrders(orders);*/
+        /*
+                LOGS TOMAS DE TIEMPO
+         */
+        logger.debug("Tiempo peticiones API: {}", finPeticionesApi-init1);
+        logger.debug("Tiempo extra carga bbdd: {}", end1-finPeticionesApi);
+        logger.debug("Tiempo carga bbdd total: {}", end1-init1);
+        logger.debug("Tiempo resumen total: {}", end2-init2);
+        logger.debug("TIEMPO TOTAL: {}", end2-init1);
     }
 
     public static HikariDataSource miDataSource(int pool) {
