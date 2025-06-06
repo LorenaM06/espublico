@@ -1,30 +1,37 @@
 package com.esPublico.kata.service;
 
 import com.esPublico.kata.Main;
+import com.esPublico.kata.config.DataSourceConfig;
 import com.esPublico.kata.model.Order;
+import com.univocity.parsers.csv.CsvWriter;
+import com.univocity.parsers.csv.CsvWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class DBService {
-    private static final Logger logger = LoggerFactory.getLogger(DBService.class);
-    private static final String sqlInsert = "INSERT INTO orders ( id, region, country, item_type, sales_channel, priority, order_date, ship_date, units_sold, unit_price, unit_cost, total_revenue, total_cost, total_profit, uuid ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-    private static final String[] fields = {"region", "country", "item_type", "sales_channel", "priority"};
-    private final DataSource dataSource;
 
-
-    public DBService(DataSource dataSource) throws SQLException {
-        this.dataSource = dataSource;
+    private static final DBService INSTANCE = new DBService();
+    public static DBService getInstance(){
+        return INSTANCE;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(DBService.class);
+    private static final String sqlInsert = "INSERT INTO orders ( id, region, country, item_type, sales_channel, priority, order_date, ship_date, units_sold, unit_price, unit_cost, total_revenue, total_cost, total_profit, uuid ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    private static final String sqlSelect = "select id, uuid, region, country, item_type, sales_channel, priority, order_date, ship_date, units_sold, unit_price, unit_cost, total_revenue, total_cost, total_profit from orders order by id;";
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private static final String[] fields = {"region", "country", "item_type", "sales_channel", "priority"};
+
     public void insertBatch(List<Order> lista) {
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = DataSourceConfig.ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlInsert)) {
             for (Order obj : lista) {
                 ps.setInt(1, obj.getId());
@@ -52,13 +59,14 @@ public class DBService {
         }
     }
 
-    public void executeGroupBy() {
+    public Long executeGroupBy() {
+        Long init = System.currentTimeMillis();
         for (String field: fields) {
             String query = "SELECT " + field + ", COUNT(*) AS total FROM orders GROUP BY " + field + " ORDER BY " + field;
 
-            try (Connection conn = dataSource.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(query);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (Connection conn = DataSourceConfig.ds.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(query);
+                 ResultSet rs = ps.executeQuery()) {
 
                 System.out.println("----- " + field.toUpperCase() + " -----");
                 while (rs.next()) {
@@ -68,6 +76,40 @@ public class DBService {
             } catch (SQLException e) {
                 System.err.println("Error processing field " + field + ": " + e.getMessage());
             }
+        }
+        return System.currentTimeMillis() - init;
+    }
+
+    public Long selectAll() throws SQLException, IOException {
+        Long init = System.currentTimeMillis();
+        try (Connection conn = DataSourceConfig.ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlSelect);
+             ResultSet rs = ps.executeQuery()) {
+
+            Writer writer = new FileWriter("orders.csv");
+            CsvWriterSettings settings = new CsvWriterSettings();
+            settings.getFormat().setDelimiter(';');
+            CsvWriter csvWriter = new CsvWriter(writer, settings);
+            ResultSetMetaData meta = rs.getMetaData();
+            int columnCount = meta.getColumnCount();
+
+            // Escribir cabecera con nombres de columnas
+            String[] header = new String[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                header[i - 1] = meta.getColumnName(i);
+            }
+            csvWriter.writeRow((Object[]) header);
+            // Escribir filas con los datos
+            while (rs.next()) {
+                String[] row = new String[columnCount];
+                for (int i = 1; i <= columnCount; i++) {
+                    row[i - 1] = rs.getString(i);
+                }
+                csvWriter.writeRow((Object[]) row);
+            }
+            csvWriter.close();
+
+            return System.currentTimeMillis()-init;
         }
     }
 }

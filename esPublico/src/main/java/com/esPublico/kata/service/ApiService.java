@@ -15,6 +15,11 @@ import java.util.Map;
 
 public class ApiService {
 
+    private static  final ApiService INSTANCE = new ApiService();
+    public static ApiService getInstance(){
+        return INSTANCE;
+    }
+
     private static final HttpClientService client = HttpClientService.getInstance();
     private static final String baseUrl = "https://kata-espublicotech.g3stiona.com/v1/orders";
     private static final ObjectMapper mapper = (new ObjectMapper()).setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);

@@ -11,11 +11,9 @@ import java.util.concurrent.BlockingQueue;
 public class ConsumerWorker implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ConsumerWorker.class);
     private final BlockingQueue<List<Order>> queue;
-    private final DBService dbService;
 
-    public ConsumerWorker(BlockingQueue<List<Order>> queue, DBService inserter) {
+    public ConsumerWorker(BlockingQueue<List<Order>> queue) {
         this.queue = queue;
-        this.dbService = inserter;
     }
 
     @Override
@@ -25,7 +23,7 @@ public class ConsumerWorker implements Runnable {
                 List<Order> lote = queue.take(); // espera si la cola está vacía
                 if (lote.isEmpty()) break; // señal de fin
                 //logger.debug("Insertando lote");
-                dbService.insertBatch(lote);
+                DBService.getInstance().insertBatch(lote);
                 //logger.debug("Lote insertado");
             }
         } catch (Exception e) {
