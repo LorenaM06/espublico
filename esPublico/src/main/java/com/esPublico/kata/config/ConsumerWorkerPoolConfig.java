@@ -16,9 +16,9 @@ public class ConsumerWorkerPoolConfig {
     public static final ExecutorService consumerPool;
 
     static {
-        consumerPool = Executors.newFixedThreadPool(DataSourceConfig.maxConnections);
+        consumerPool = Executors.newFixedThreadPool(ConfigLoader.getDdbbMaximumPoolSize());
         // Lanzar consumidores
-        for (int i = 0; i < DataSourceConfig.maxConnections; i++) {
+        for (int i = 0; i < ConfigLoader.getDdbbMaximumPoolSize(); i++) {
             consumerPool.submit(new ConsumerWorker(queue));
         }
     }

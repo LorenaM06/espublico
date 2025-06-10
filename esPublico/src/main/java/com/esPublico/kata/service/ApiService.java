@@ -1,5 +1,6 @@
 package com.esPublico.kata.service;
 
+import com.esPublico.kata.config.ConfigLoader;
 import com.esPublico.kata.model.Order;
 import com.esPublico.kata.model.PageOrder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,11 +20,11 @@ public class ApiService {
     }
 
     private static final HttpClientService client = HttpClientService.getInstance();
-    private static final String baseUrl = "https://kata-espublicotech.g3stiona.com/v1/orders";
+    private static final String baseUrl = ConfigLoader.getApiBaseUrl();
     private static final ObjectMapper mapper = (new ObjectMapper()).setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
     public PageOrder getOrders(String page, String maxPerPage) throws IOException, InterruptedException, URISyntaxException {
-        URI uri = new URIBuilder(baseUrl)
+        URI uri = new URIBuilder(baseUrl + "/orders")
                 .addParameter("page", page)
                 .addParameter("max-per-page", maxPerPage)
                 .build();
