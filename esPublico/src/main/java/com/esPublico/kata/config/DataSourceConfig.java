@@ -10,6 +10,7 @@ import java.util.Properties;
 public class DataSourceConfig {
 
     public static final HikariDataSource ds;
+    public static final int maxConnections;
 
     static {
         try (InputStream input = DataSourceConfig.class.getClassLoader().getResourceAsStream("local.properties")) {
@@ -21,7 +22,8 @@ public class DataSourceConfig {
             config.setPassword(properties.getProperty("jdbc.password"));
 
             // Opcionales pero recomendados
-            config.setMaximumPoolSize(Integer.parseInt(properties.getProperty("hikari.maximumPoolSize"))); // Número máximo de conexiones simultáneas
+            maxConnections = Integer.parseInt(properties.getProperty("hikari.maximumPoolSize"));
+            config.setMaximumPoolSize(maxConnections); // Número máximo de conexiones simultáneas
             config.setMinimumIdle(Integer.parseInt(properties.getProperty("hikari.minimumIdle")));      // Conexiones mínimas en reposo
             config.setIdleTimeout(30000);  // 30 segundos
             config.setMaxLifetime(600000); // 10 minutos

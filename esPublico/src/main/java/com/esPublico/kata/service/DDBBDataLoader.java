@@ -1,6 +1,7 @@
 package com.esPublico.kata.service;
 
 import com.esPublico.kata.Main;
+import com.esPublico.kata.config.ConsumerWorkerPoolConfig;
 import com.esPublico.kata.config.DataSourceConfig;
 import com.esPublico.kata.model.Order;
 import com.esPublico.kata.model.PageOrder;
@@ -25,41 +26,20 @@ public class DDBBDataLoader {
 
     public Long loadDDBB() throws SQLException, IOException, URISyntaxException, InterruptedException {
         Long init1 = System.currentTimeMillis();
-        ApiService apiService = ApiService.getInstance();
-        int maxConsumers = 200;
-        BlockingQueue<List<Order>> queue = new LinkedBlockingQueue<>();
-        DBService dbService = DBService.getInstance();
 
-        ExecutorService consumerPool = initExecutor(maxConsumers,queue);
 
         String maxPerPage = "1000";
         int totalOrders = Integer.valueOf(maxPerPage);
-        String nextUri = firstRequest(queue, maxPerPage);
-        totalOrders += nextRequest(nextUri, queue);
+        String nextUri = firstRequest(ConsumerWorkerPoolConfig.queue, maxPerPage);
+        totalOrders += nextRequest(nextUri, ConsumerWorkerPoolConfig.queue);
+        endRequest();
         Long finPeticionesApi = System.currentTimeMillis();
-
-        for (int i = 0; i < maxConsumers; i++) {
-            queue.put(Collections.emptyList()); // lotes vacíos como señal de fin
-        }
-
-        consumerPool.shutdown();
-        consumerPool.awaitTermination(1, TimeUnit.HOURS);
-
 
         logger.debug("Carga de bbdd terminada");
         Long end1 = System.currentTimeMillis();
         logger.debug("Tiempo peticiones API: {} - Total registros recuperados: {}", finPeticionesApi-init1, totalOrders);
         logger.debug("Tiempo extra carga bbdd: {}", end1-finPeticionesApi);
         return end1-init1;
-    }
-
-    private ExecutorService initExecutor(int maxConsumers, BlockingQueue<List<Order>> queue) {
-        ExecutorService consumerPool = Executors.newFixedThreadPool(maxConsumers);
-        // Lanzar consumidores
-        for (int i = 0; i < maxConsumers; i++) {
-            consumerPool.submit(new ConsumerWorker(queue));
-        }
-        return consumerPool;
     }
 
     private String firstRequest(BlockingQueue<List<Order>> queue, String maxPerPage) throws IOException, URISyntaxException, InterruptedException {
@@ -77,5 +57,16 @@ public class DDBBDataLoader {
             total += pageOrder.getContent().size();
         }
         return total;
+    }
+
+    private void endRequest() throws InterruptedException {
+        int consumerPoolSize = ((ThreadPoolExecutor) ConsumerWorkerPoolConfig.consumerPool).getPoolSize();
+
+        for (int i = 0; i < consumerPoolSize; i++) {
+            ConsumerWorkerPoolConfig.queue.put(Collections.emptyList()); // lotes vacíos como señal de fin
+        }
+
+        ConsumerWorkerPoolConfig.consumerPool.shutdown();
+        ConsumerWorkerPoolConfig.consumerPool.awaitTermination(1, TimeUnit.HOURS);
     }
 }
