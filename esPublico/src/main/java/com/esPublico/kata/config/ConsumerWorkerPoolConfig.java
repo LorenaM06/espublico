@@ -2,6 +2,7 @@ package com.esPublico.kata.config;
 
 import com.esPublico.kata.model.Order;
 import com.esPublico.kata.service.ConsumerWorker;
+import com.esPublico.kata.service.DBService;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -43,7 +44,7 @@ public class ConsumerWorkerPoolConfig {
         consumerPool = Executors.newFixedThreadPool(ConfigLoader.getDdbbMaximumPoolSize());
         // Lanzar consumidores
         for (int i = 0; i < ConfigLoader.getDdbbMaximumPoolSize(); i++) {
-            consumerPool.submit(new ConsumerWorker(queue));
+            consumerPool.submit(new ConsumerWorker(queue, DBService.getInstance()));
         }
     }
 }

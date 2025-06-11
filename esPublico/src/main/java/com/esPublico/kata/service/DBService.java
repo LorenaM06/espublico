@@ -1,6 +1,5 @@
 package com.esPublico.kata.service;
 
-import com.esPublico.kata.Main;
 import com.esPublico.kata.config.DataSourceConfig;
 import com.esPublico.kata.model.Order;
 import com.univocity.parsers.csv.CsvWriter;
@@ -8,7 +7,6 @@ import com.univocity.parsers.csv.CsvWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -17,9 +15,21 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Servicio singleton para operaciones de base de datos.
+ * <p>
+ * Utiliza una conexión configurada a través de {@link DataSourceConfig}.
+ * </p>
+ */
 public class DBService {
 
     private static final DBService INSTANCE = new DBService();
+
+    /**
+     * Obtiene la instancia singleton de {@code DBService}.
+     *
+     * @return instancia única de {@code DBService}.
+     */
     public static DBService getInstance(){
         return INSTANCE;
     }
@@ -30,6 +40,15 @@ public class DBService {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     private static final String[] fields = {"region", "country", "item_type", "sales_channel", "priority"};
 
+    /**
+     * Inserta un lote de órdenes en la base de datos utilizando ejecución batch.
+     * <p>
+     * Cada objeto {@link Order} del listado es mapeado a los parámetros del
+     * {@code PreparedStatement} para la inserción.
+     * </p>
+     *
+     * @param lista lista de órdenes a insertar; no debe ser {@code null}.
+     */
     public void insertBatch(List<Order> lista) {
         try (Connection conn = DataSourceConfig.ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlInsert)) {
@@ -59,8 +78,17 @@ public class DBService {
         }
     }
 
-    public Long executeGroupBy() {
-        Long init = System.currentTimeMillis();
+    /**
+     * Ejecuta consultas de agrupamiento {@code GROUP BY} para varios campos predefinidos,
+     * mostrando el conteo total de órdenes para cada valor de campo.
+     * <p>
+     * Los campos considerados son: {@code region}, {@code country}, {@code item_type}, {@code sales_channel} y {@code priority}.
+     * </p>
+     *
+     * @return tiempo en milisegundos que tardó en ejecutar todas las consultas.
+     */
+    public Long executeAndLogGroupBy() {
+        long init = System.currentTimeMillis();
         for (String field: fields) {
             String query = "SELECT " + field + ", COUNT(*) AS total FROM orders GROUP BY " + field + " ORDER BY " + field;
 
@@ -80,8 +108,17 @@ public class DBService {
         return System.currentTimeMillis() - init;
     }
 
-    public Long selectAll() throws SQLException, IOException {
-        Long init = System.currentTimeMillis();
+    /**
+     * Ejecuta consultas de agrupamiento {@code GROUP BY} para varios campos predefinidos,
+     * mostrando el conteo total de órdenes para cada valor de campo.
+     * <p>
+     * Los campos considerados son: {@code region}, {@code country}, {@code item_type}, {@code sales_channel} y {@code priority}.
+     * </p>
+     *
+     * @return tiempo en milisegundos que tardó en ejecutar todas las consultas.
+     */
+    public Long exportOrdersToCsv() throws SQLException, IOException {
+        long init = System.currentTimeMillis();
         try (Connection conn = DataSourceConfig.ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlSelect);
              ResultSet rs = ps.executeQuery()) {

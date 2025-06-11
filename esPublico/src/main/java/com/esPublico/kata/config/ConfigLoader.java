@@ -121,4 +121,11 @@ public class ConfigLoader {
     public static String getApiBaseUrl() {
         return requireProperty("api.baseUrl");
     }
+
+    /**
+     * Obtiene el número de registros obtenidos en las peticiones a la API.
+     *
+     * @return el valor definido en `api.maxPerPage`.
+     */
+    public static String getApiMaxPerPage() { return requireProperty("api.maxPerPage"); }
 }

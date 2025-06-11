@@ -8,7 +8,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * para gestionar el pool de conexiones a la base de datos.
  * <p>
  * Esta clase utiliza un bloque estático para inicializar el pool de conexiones
- * mediante {@link HikariCP}, utilizando los parámetros definidos en {@link ConfigLoader}.
+ * mediante HikariCP, utilizando los parámetros definidos en {@link ConfigLoader}.
  * <p>
  * El pool se configura con valores obtenidos de {@link ConfigLoader} como número máximo de conexiones,
  * conexiones mínimas en reposo, url de conexión, usuario y contraseña.

@@ -5,15 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Representa un pedido (Order) con sus atributos principales.
- * Implementa Serializable para permitir la serialización del objeto.
+ * <p>Representa un pedido (Order) con sus atributos principales.
+ * Implementa Serializable para permitir la serialización del objeto.</p>
  *
- * Cada pedido contiene información como identificadores, datos geográficos,
+ * <p>Cada pedido contiene información como identificadores, datos geográficos,
  * detalles del producto, fechas relevantes, cantidades, precios y beneficios.
- * También incluye un mapa de enlaces relacionados.
+ * También incluye un mapa de enlaces relacionados.</p>
  *
  * @author [Tu Nombre]
  * @version 1.0
@@ -100,5 +100,5 @@ public class Order implements Serializable {
     /**
      * Mapa de enlaces relacionados con el pedido.
      */
-    private HashMap<String, String> links;
+    private Map<String, String> links;
 }

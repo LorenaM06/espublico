@@ -24,12 +24,12 @@ public class Main {
 
         // Resumen del número de pedidos de cada tipo según distintas columnas
         Callable<Long> summaryTask = () -> {
-            return DBService.getInstance().executeGroupBy();
+            return DBService.getInstance().executeAndLogGroupBy();
         };
 
         // Generar un fichero con los registros ordenados por número de pedido
         Callable<Long> createCsvTask = () -> {
-            return DBService.getInstance().selectAll();
+            return DBService.getInstance().exportOrdersToCsv();
         };
 
 

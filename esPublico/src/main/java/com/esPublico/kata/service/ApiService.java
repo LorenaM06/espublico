@@ -14,7 +14,6 @@ import java.util.Map;
 /**
  * Servicio para interactuar con la API externa de pedidos.
  * Implementa el patrón Singleton para asegurar una única instancia durante la ejecución.
- *
  * Utiliza un HttpClientService para realizar peticiones HTTP y Jackson ObjectMapper para deserializar JSON.
  */
 public class ApiService {
